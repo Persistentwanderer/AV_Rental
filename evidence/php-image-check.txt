@@ -1,0 +1,58 @@
+PHP 8.4.27 (cli) (built: Nov  5 2026 07:23:05) (NTS)
+Copyright (c) The PHP Group
+Built by https://github.com/docker-library/php
+Zend Engine v4.4.27, Copyright (c) Zend Technologies
+    with Zend OPcache v8.4.27, Copyright (c), by Zend Technologies
+[PHP Modules]
+bcmath
+Core
+ctype
+curl
+date
+dom
+fileinfo
+filter
+hash
+iconv
+intl
+json
+libxml
+mbstring
+mysqlnd
+openssl
+pcntl
+pcre
+PDO
+pdo_pgsql
+pdo_sqlite
+Phar
+posix
+random
+readline
+redis
+Reflection
+session
+SimpleXML
+sodium
+SPL
+sqlite3
+standard
+tokenizer
+xml
+xmlreader
+xmlwriter
+Zend OPcache
+zip
+zlib
+
+[Zend Modules]
+Zend OPcache
+
+v22.23.4
+10.9.9
+Composer version 2.11.1 2026-10-30 14:52:10
+PHP version 8.4.27 (/usr/local/bin/php)
+Run the "diagnose" command to get more detailed diagnostics output.
+REPOSITORY              TAG       IMAGE ID       CREATED         SIZE
+av-rental-signals-php   local     52e0480ad33f   3 seconds ago   875MB
+Compose application profile valid
