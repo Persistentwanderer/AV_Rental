@@ -18,7 +18,7 @@ The first choice was [Signals Rental Framework](https://docs.signals.rent/docs/g
 - `github.com/signals-rental/framework` returns 404
 - Packagist package `signals-rental/framework-core` does not exist
 
-The spike's own notes, probe logs, and the empty `framework-core` mount are in [docs/signals-spike/](docs/signals-spike/OUTCOME.md). Nothing from Signals was installed. ERPNext plus `av_rental` is the base that was actually built.
+The spike's own notes, probe logs, and the empty `framework-core` mount are in [docs/signals-spike/](docs/signals-spike/OUTCOME.md). Nothing from Signals was installed. ERPNext plus `av_rental` is the base that was actually built. The Signals Compose scaffold, kept for the day source exists, is on the [`signals` branch](https://github.com/Persistentwanderer/AV_Rental/tree/signals).
 
 ## Why ERPNext and a custom app
 
