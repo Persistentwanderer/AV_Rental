@@ -1,0 +1,141 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-11-06 08:00:00.000000",
+ "description": "A named node in the project's gear tree. Parent is optional, so a project can be one flat list or a list of lists. Planned out and in stay the baseline.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "list_name",
+  "rental_project",
+  "parent_gear_list",
+  "is_group",
+  "list_status",
+  "column_break_tree",
+  "planned_out",
+  "planned_in",
+  "warehouse",
+  "section_break_notes",
+  "notes"
+ ],
+ "fields": [
+  {
+   "default": "GL-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "GL-.YYYY.-",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "list_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "List Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rental_project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Rental Project",
+   "options": "Rental Project",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "parent_gear_list",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Parent Gear List",
+   "options": "Gear List",
+   "search_index": 1
+  },
+  {
+   "default": "0",
+   "description": "Tick when this node groups child lists (Truck A) and the lines live on the children.",
+   "fieldname": "is_group",
+   "fieldtype": "Check",
+   "label": "Is Group"
+  },
+  {
+   "default": "Planned",
+   "description": "Derived from hire events for this list and its children. Sibling lists are not updated when this one changes.",
+   "fieldname": "list_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "List Status",
+   "options": "Planned\nIssued\nPartially Returned\nReturned",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_tree",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "planned_out",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Planned Out",
+   "reqd": 1
+  },
+  {
+   "fieldname": "planned_in",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "Planned In",
+   "reqd": 1
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "fieldname": "section_break_notes",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "links": [],
+ "modified": "2026-11-06 08:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AV Rental",
+ "name": "Gear List",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "list_name,rental_project,list_status",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "list_name",
+ "track_changes": 1
+}
