@@ -1,0 +1,58 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"hdr\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>AV Rental</b></span><br>Nested gear lists. Issue, return, extend, and damage are events.\", \"col\": 12}}, {\"id\": \"s1\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Rental Project\", \"col\": 3}}, {\"id\": \"s2\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Gear List\", \"col\": 3}}, {\"id\": \"s3\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Rental Line\", \"col\": 3}}, {\"id\": \"s4\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Rental Event\", \"col\": 3}}, {\"id\": \"s5\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Effective On Hire\", \"col\": 3}}]",
+ "creation": "2026-11-06 08:00:00.000000",
+ "custom_blocks": [],
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "list",
+ "is_hidden": 0,
+ "label": "AV Rental",
+ "links": [],
+ "modified": "2026-11-06 08:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AV Rental",
+ "name": "AV Rental",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [],
+ "sequence_id": 25.0,
+ "shortcuts": [
+  {
+   "doc_view": "List",
+   "label": "Rental Project",
+   "link_to": "Rental Project",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Gear List",
+   "link_to": "Gear List",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Rental Line",
+   "link_to": "Rental Line",
+   "type": "DocType"
+  },
+  {
+   "doc_view": "List",
+   "label": "Rental Event",
+   "link_to": "Rental Event",
+   "type": "DocType"
+  },
+  {
+   "label": "Effective On Hire",
+   "link_to": "Effective On Hire",
+   "type": "Report"
+  }
+ ],
+ "standard": 1,
+ "title": "AV Rental",
+ "type": "Workspace"
+}

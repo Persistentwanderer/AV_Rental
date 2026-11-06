@@ -1,0 +1,23 @@
+[project]
+name = "av_rental"
+version = "0.1.0"
+description = "Dry-hire AV and lighting rental on ERPNext"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "Issac", email = "issac@example.invalid" }]
+license = { text = "MIT" }
+dependencies = []
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["av_rental*"]
+
+[tool.setuptools.package-data]
+av_rental = ["*.txt", "*.md", "*.js", "*.json", "**/*.js", "**/*.json", "**/*.md", "**/*.txt"]
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<17.0.0"
+erpnext = ">=15.0.0,<17.0.0"

@@ -1,0 +1,1 @@
+No Signals application present; refusing a placeholder app.

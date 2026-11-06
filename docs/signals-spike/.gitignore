@@ -1,0 +1,11 @@
+# Historical spike rules. framework-core/ stays visible so the empty mount
+# (.gitkeep) remains part of the evidence. No live .env is stored.
+.env
+.env.*
+!.env.example
+vendor/
+node_modules/
+*.log
+scripts/composer.phar
+evidence/docs-sitemap.xml
+evidence/.unused-placeholder

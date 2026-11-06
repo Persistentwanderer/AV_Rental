@@ -1,0 +1,185 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-11-06 08:00:00.000000",
+ "description": "Append-only hire trail. These rows are the issue, partial return, extension, and damage. They are not edited and they do not rewrite the project.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "subject",
+  "event_type",
+  "scope",
+  "qty",
+  "column_break_event",
+  "event_timestamp",
+  "actor",
+  "batch_id",
+  "extended_until",
+  "section_break_links",
+  "rental_project",
+  "gear_list",
+  "rental_line",
+  "section_break_reason",
+  "reason",
+  "notes"
+ ],
+ "fields": [
+  {
+   "default": "RE-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "RE-.YYYY.-",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "subject",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Subject",
+   "read_only": 1
+  },
+  {
+   "fieldname": "event_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Event Type",
+   "options": "Issue\nPartial Return\nExtend\nDamage",
+   "reqd": 1
+  },
+  {
+   "default": "Line",
+   "fieldname": "scope",
+   "fieldtype": "Select",
+   "label": "Scope",
+   "options": "Line\nGear List",
+   "reqd": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Qty",
+   "non_negative": 1,
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_event",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Now",
+   "fieldname": "event_timestamp",
+   "fieldtype": "Datetime",
+   "in_list_view": 1,
+   "label": "When",
+   "reqd": 1
+  },
+  {
+   "fieldname": "actor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Who",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "batch_id",
+   "fieldtype": "Data",
+   "label": "Batch",
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "depends_on": "eval:doc.event_type==\"Extend\"",
+   "fieldname": "extended_until",
+   "fieldtype": "Datetime",
+   "label": "Extended Until",
+   "mandatory_depends_on": "eval:doc.event_type==\"Extend\""
+  },
+  {
+   "fieldname": "section_break_links",
+   "fieldtype": "Section Break",
+   "label": "What changed"
+  },
+  {
+   "fieldname": "rental_project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Rental Project",
+   "options": "Rental Project",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "gear_list",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Gear List",
+   "options": "Gear List",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "rental_line",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Rental Line",
+   "options": "Rental Line",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_reason",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "reason",
+   "fieldtype": "Small Text",
+   "label": "Reason",
+   "reqd": 1
+  },
+  {
+   "fieldname": "notes",
+   "fieldtype": "Small Text",
+   "label": "Notes"
+  }
+ ],
+ "links": [],
+ "modified": "2026-11-06 08:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AV Rental",
+ "name": "Rental Event",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 0,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 0
+  }
+ ],
+ "search_fields": "subject,event_type,rental_project,actor",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "subject",
+ "track_changes": 0
+}

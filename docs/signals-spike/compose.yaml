@@ -1,0 +1,72 @@
+name: av-rental-signals
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: signals
+      POSTGRES_USER: signals
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-change-me}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U signals -d signals && psql -U signals -d signals -tAc 'CREATE EXTENSION IF NOT EXISTS btree_gist; CREATE EXTENSION IF NOT EXISTS pg_trgm; SELECT 1' | grep -q 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+    ports: ["127.0.0.1:55432:5432"]
+    volumes: ["postgres-data:/var/lib/postgresql/data"]
+    restart: unless-stopped
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    volumes: ["redis-data:/data"]
+    restart: unless-stopped
+  app:
+    image: av-rental-signals-php:local
+    build:
+      context: .
+      dockerfile: docker/php.Dockerfile
+      network: host
+    profiles: [application]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_healthy}
+    environment:
+      POSTGRES_DB: signals
+      POSTGRES_USER: signals
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-change-me}
+      APP_URL: http://localhost:18080
+    ports: ["127.0.0.1:18080:8000"]
+    volumes: ["./framework-core:/var/www/signals"]
+    user: "1000:1000"
+    entrypoint: ["/usr/local/bin/docker-php-entrypoint", "/app/docker/entrypoint.sh"]
+    init: true
+  worker-semaphore:
+    image: busybox:1.37
+    profiles: [application]
+    command: ["sh", "-c", "test -f /source/artisan || { echo 'No Signals artisan application; see SPIKE.md' >&2; exit 1; }"]
+    volumes: ["./framework-core:/source:ro"]
+  worker:
+    image: av-rental-signals-php:local
+    profiles: [application]
+    depends_on:
+      app: {condition: service_started}
+      worker-semaphore: {condition: service_completed_successfully}
+    working_dir: /var/www/signals
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3"]
+    volumes: ["./framework-core:/var/www/signals"]
+  scheduler:
+    image: av-rental-signals-php:local
+    profiles: [application]
+    depends_on:
+      worker-semaphore: {condition: service_completed_successfully}
+    working_dir: /var/www/signals
+    command: ["php", "artisan", "schedule:work"]
+    volumes: ["./framework-core:/var/www/signals"]
+volumes:
+  postgres-data:
+  redis-data:
