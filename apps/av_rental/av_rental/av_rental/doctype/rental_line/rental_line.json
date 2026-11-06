@@ -1,0 +1,167 @@
+{
+ "actions": [],
+ "allow_import": 1,
+ "allow_rename": 0,
+ "autoname": "naming_series:",
+ "creation": "2026-11-06 08:00:00.000000",
+ "description": "One item quantity on a gear list. The planned window is the baseline. What is still out is computed from Rental Events.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "gear_list",
+  "rental_project",
+  "section_break_item",
+  "item_code",
+  "item_name",
+  "qty",
+  "uom",
+  "column_break_item",
+  "warehouse",
+  "serial_no",
+  "section_break_plan",
+  "planned_out",
+  "planned_in",
+  "section_break_notes",
+  "description"
+ ],
+ "fields": [
+  {
+   "default": "RL-.YYYY.-",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Series",
+   "options": "RL-.YYYY.-",
+   "reqd": 1,
+   "set_only_once": 1
+  },
+  {
+   "fieldname": "gear_list",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Gear List",
+   "options": "Gear List",
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fetch_from": "gear_list.rental_project",
+   "fieldname": "rental_project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "Rental Project",
+   "options": "Rental Project",
+   "read_only": 1,
+   "reqd": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "section_break_item",
+   "fieldtype": "Section Break",
+   "label": "Gear"
+  },
+  {
+   "fieldname": "item_code",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Item",
+   "options": "Item",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_code.item_name",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "qty",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Planned Qty",
+   "non_negative": 1,
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fetch_from": "item_code.stock_uom",
+   "fieldname": "uom",
+   "fieldtype": "Link",
+   "label": "UOM",
+   "options": "UOM"
+  },
+  {
+   "fieldname": "column_break_item",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "warehouse",
+   "fieldtype": "Link",
+   "label": "Warehouse",
+   "options": "Warehouse"
+  },
+  {
+   "description": "Optional ERPNext serial numbers, one per line. This MVP does not post them to the stock ledger.",
+   "fieldname": "serial_no",
+   "fieldtype": "Small Text",
+   "label": "Serial Nos"
+  },
+  {
+   "fieldname": "section_break_plan",
+   "fieldtype": "Section Break",
+   "label": "Planned Window"
+  },
+  {
+   "fieldname": "planned_out",
+   "fieldtype": "Datetime",
+   "label": "Planned Out",
+   "reqd": 1
+  },
+  {
+   "fieldname": "planned_in",
+   "fieldtype": "Datetime",
+   "label": "Planned In",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_break_notes",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  }
+ ],
+ "links": [],
+ "modified": "2026-11-06 08:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "AV Rental",
+ "name": "Rental Line",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "search_fields": "item_code,item_name,gear_list",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "item_name",
+ "track_changes": 1
+}

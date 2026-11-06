@@ -1,0 +1,19 @@
+=== containers ===
+CONTAINER ID   IMAGE                COMMAND                  CREATED         STATUS                   PORTS                       NAMES
+04cc04aa619d   postgres:17-alpine   "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes (healthy)   127.0.0.1:55432->5432/tcp   av-rental-signals-postgres-1
+335c592bd498   redis:7-alpine       "docker-entrypoint.s…"   3 minutes ago   Up 3 minutes (healthy)   6379/tcp                    av-rental-signals-redis-1
+=== PostgreSQL ===
+                                         version                                          
+------------------------------------------------------------------------------------------
+ PostgreSQL 17.11 on x86_64-pc-linux-musl, compiled by gcc (Alpine 15.2.0) 15.2.0, 64-bit
+(1 row)
+
+  extname   | extversion 
+------------+------------
+ btree_gist | 1.7
+ pg_trgm    | 1.6
+(2 rows)
+
+=== Redis ===
+PONG
+Signals application: NOT INSTALLED; source is unavailable. See SPIKE.md.

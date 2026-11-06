@@ -1,0 +1,169 @@
+# Local ERPNext + av_rental stack.
+#
+# Single-file adaptation of the official frappe_docker files:
+#   compose.yaml
+#   overrides/compose.mariadb.yaml
+#   overrides/compose.redis.yaml
+#   overrides/compose.noproxy.yaml
+# https://github.com/frappe/frappe_docker
+#
+# This is not a fork of ERPNext. The image starts from frappe/erpnext and
+# installs apps/av_rental. Host port 18080 avoids the common 8080 clash.
+# nginx inside the container still listens on 8080, which is the upstream default.
+# MariaDB and Redis stay on the Compose network (no host ports).
+
+name: av-rental
+
+x-image: &image
+  image: ${CUSTOM_IMAGE:-avrental-erpnext}:${CUSTOM_TAG:-${ERPNEXT_VERSION:-v16.54.0}}
+  pull_policy: ${PULL_POLICY:-never}
+  restart: ${RESTART_POLICY:-unless-stopped}
+  build:
+    context: .
+    dockerfile: Dockerfile
+    args:
+      ERPNEXT_VERSION: ${ERPNEXT_VERSION:-v16.54.0}
+
+x-depends-on-configurator: &depends_on_configurator
+  depends_on:
+    configurator:
+      condition: service_completed_successfully
+
+x-backend-defaults: &backend_defaults
+  <<: [*depends_on_configurator, *image]
+  volumes:
+    - sites:/home/frappe/frappe-bench/sites
+
+services:
+  configurator:
+    <<: *backend_defaults
+    entrypoint: ["bash", "-c"]
+    command:
+      - >
+        ls -1 apps > sites/apps.txt;
+        bench set-config -g db_host $$DB_HOST;
+        bench set-config -gp db_port $$DB_PORT;
+        bench set-config -g redis_cache "redis://$$REDIS_CACHE";
+        bench set-config -g redis_queue "redis://$$REDIS_QUEUE";
+        bench set-config -g redis_socketio "redis://$$REDIS_QUEUE";
+        bench set-config -gp socketio_port $$SOCKETIO_PORT;
+        bench set-config -g chromium_path /usr/lib/chromium/chromium-headless-shell;
+    environment:
+      DB_HOST: db
+      DB_PORT: "3306"
+      REDIS_CACHE: redis-cache:6379
+      REDIS_QUEUE: redis-queue:6379
+      SOCKETIO_PORT: "9000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis-cache:
+        condition: service_healthy
+      redis-queue:
+        condition: service_healthy
+    restart: on-failure
+
+  backend:
+    <<: *backend_defaults
+    environment:
+      GUNICORN_THREADS: ${GUNICORN_THREADS:-2}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-1}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/home/frappe/frappe-bench/env/bin/python -c \"import socket; socket.create_connection(('127.0.0.1', 8000), 2).close()\"",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  frontend:
+    <<: *image
+    command: ["nginx-entrypoint.sh"]
+    environment:
+      BACKEND: backend:8000
+      SOCKETIO: websocket:9000
+      NGINX_LISTEN_PORT: ${NGINX_LISTEN_PORT:-8080}
+      FRAPPE_SITE_NAME_HEADER: ${FRAPPE_SITE_NAME_HEADER:-avrental.localhost}
+      UPSTREAM_REAL_IP_ADDRESS: ${UPSTREAM_REAL_IP_ADDRESS:-127.0.0.1}
+      UPSTREAM_REAL_IP_HEADER: ${UPSTREAM_REAL_IP_HEADER:-X-Forwarded-For}
+      UPSTREAM_REAL_IP_RECURSIVE: ${UPSTREAM_REAL_IP_RECURSIVE:-off}
+      PROXY_READ_TIMEOUT: ${PROXY_READ_TIMEOUT:-120}
+      CLIENT_MAX_BODY_SIZE: ${CLIENT_MAX_BODY_SIZE:-50m}
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+    ports:
+      - "127.0.0.1:${HTTP_PUBLISH_PORT:-18080}:${NGINX_LISTEN_PORT:-8080}"
+    depends_on:
+      - backend
+      - websocket
+
+  websocket:
+    <<: [*depends_on_configurator, *image]
+    command: ["node", "/home/frappe/frappe-bench/apps/frappe/socketio.js"]
+    volumes:
+      - sites:/home/frappe/frappe-bench/sites
+
+  queue-short:
+    <<: *backend_defaults
+    command: ["bench", "worker", "--queue", "short,default"]
+
+  queue-long:
+    <<: *backend_defaults
+    command: ["bench", "worker", "--queue", "long,default,short"]
+
+  scheduler:
+    <<: *backend_defaults
+    command: ["bench", "schedule"]
+
+  db:
+    image: mariadb:11.8
+    restart: unless-stopped
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --skip-character-set-client-handshake
+      - --innodb-snapshot-isolation=OFF
+    environment:
+      # Local placeholder. Override DB_PASSWORD in .env before any shared use.
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-change-me}
+      MARIADB_AUTO_UPGRADE: "1"
+    volumes:
+      - db-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  redis-cache:
+    image: redis:8.6-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+  redis-queue:
+    image: redis:8.6-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-queue-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+
+volumes:
+  sites:
+  db-data:
+  redis-queue-data:

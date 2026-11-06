@@ -1,0 +1,6 @@
+include README.md
+include license.txt
+recursive-include av_rental *.json
+recursive-include av_rental *.js
+recursive-include av_rental *.md
+recursive-include av_rental *.txt
