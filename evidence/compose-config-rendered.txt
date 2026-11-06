@@ -1,0 +1,167 @@
+name: av-rental-signals
+services:
+  app:
+    profiles:
+      - application
+    build:
+      context: /workspace/av-rental-signals
+      dockerfile: docker/php.Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: true
+      redis:
+        condition: service_healthy
+        required: true
+    entrypoint:
+      - /usr/local/bin/docker-php-entrypoint
+      - /app/docker/entrypoint.sh
+    environment:
+      APP_URL: http://localhost:8080
+      POSTGRES_DB: signals
+      POSTGRES_PASSWORD: local-infrastructure-only
+      POSTGRES_USER: signals
+    image: av-rental-signals-php:local
+    init: true
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 8000
+        published: "8080"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: /workspace/av-rental-signals/framework-core
+        target: /var/www/signals
+        bind:
+          create_host_path: true
+      - type: volume
+        source: composer-cache
+        target: /tmp
+        volume: {}
+  postgres:
+    environment:
+      POSTGRES_DB: signals
+      POSTGRES_PASSWORD: local-infrastructure-only
+      POSTGRES_USER: signals
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -U signals -d signals && psql -U signals -d signals -tAc 'CREATE EXTENSION IF NOT EXISTS btree_gist; CREATE EXTENSION IF NOT EXISTS pg_trgm; SELECT 1' | grep -q 1
+      timeout: 5s
+      interval: 5s
+      retries: 20
+      start_period: 10s
+    image: postgres:17-alpine
+    networks:
+      default: null
+    ports:
+      - mode: ingress
+        host_ip: 127.0.0.1
+        target: 5432
+        published: "55432"
+        protocol: tcp
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: postgres-data
+        target: /var/lib/postgresql/data
+        volume: {}
+  redis:
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+    healthcheck:
+      test:
+        - CMD
+        - redis-cli
+        - ping
+      timeout: 3s
+      interval: 5s
+      retries: 20
+    image: redis:7-alpine
+    networks:
+      default: null
+    restart: unless-stopped
+    volumes:
+      - type: volume
+        source: redis-data
+        target: /data
+        volume: {}
+  scheduler:
+    profiles:
+      - application
+    command:
+      - php
+      - artisan
+      - schedule:work
+    depends_on:
+      worker-semaphore:
+        condition: service_completed_successfully
+        required: true
+    image: av-rental-signals-php:local
+    networks:
+      default: null
+    volumes:
+      - type: bind
+        source: /workspace/av-rental-signals/framework-core
+        target: /var/www/signals
+        bind:
+          create_host_path: true
+    working_dir: /var/www/signals
+  worker:
+    profiles:
+      - application
+    command:
+      - php
+      - artisan
+      - queue:work
+      - --sleep=3
+      - --tries=3
+    depends_on:
+      app:
+        condition: service_started
+        required: true
+      worker-semaphore:
+        condition: service_completed_successfully
+        required: true
+    image: av-rental-signals-php:local
+    networks:
+      default: null
+    volumes:
+      - type: bind
+        source: /workspace/av-rental-signals/framework-core
+        target: /var/www/signals
+        bind:
+          create_host_path: true
+    working_dir: /var/www/signals
+  worker-semaphore:
+    profiles:
+      - application
+    command:
+      - sh
+      - -c
+      - test -f /source/artisan || { echo 'No Signals artisan application; see SPIKE.md' >&2; exit 1; }
+    image: busybox:1.37
+    networks:
+      default: null
+    volumes:
+      - type: bind
+        source: /workspace/av-rental-signals/framework-core
+        target: /source
+        read_only: true
+        bind:
+          create_host_path: true
+networks:
+  default:
+    name: av-rental-signals_default
+volumes:
+  composer-cache:
+    name: av-rental-signals_composer-cache
+  postgres-data:
+    name: av-rental-signals_postgres-data
+  redis-data:
+    name: av-rental-signals_redis-data

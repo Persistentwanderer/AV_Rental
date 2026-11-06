@@ -1,0 +1,22 @@
+Signals source probes; authoritative public endpoints
+=== https://api.github.com/repos/signals-rental/framework-core ===
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest/repos/repos#get-a-repository",
+  "status": "404"
+}
+
+HTTP 404
+=== https://api.github.com/repos/signals-rental/framework ===
+{
+  "message": "Not Found",
+  "documentation_url": "https://docs.github.com/rest/repos/repos#get-a-repository",
+  "status": "404"
+}
+
+HTTP 404
+=== https://repo.packagist.org/p2/signals-rental/framework-core.json ===
+"404 not found, no packages here"
+
+
+HTTP 404
